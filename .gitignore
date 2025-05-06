@@ -39,4 +39,4 @@ data/training/*.csv
 config/user_config.json
 
 # Environment variables
-.env.local
+.env.local.DS_Store
