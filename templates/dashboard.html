@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bjorn HVAC Abbreviation Tool</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: #2196F3;
+        }
+        
+        .nav-link {
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .nav-link.active {
+            color: #2196F3;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stats-card .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #2196F3;
+        }
+        
+        .stats-card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stats-card .label {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .abbr-example {
+            padding: 10px;
+            border-left: 3px solid #2196F3;
+            background-color: #f8f9fa;
+            margin-bottom: 10px;
+        }
+        
+        .abbr-example .original {
+            color: #555;
+        }
+        
+        .abbr-example .arrow {
+            color: #999;
+            margin: 0 5px;
+        }
+        
+        .abbr-example .abbreviated {
+            color: #2196F3;
+            font-weight: 500;
+        }
+        
+        .progress {
+            height: 8px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-snowflake me-2"></i>
+                Bjorn HVAC Abbreviation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard"><i class="fas fa-chart-bar me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/train"><i class="fas fa-brain me-1"></i> ML Training</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="fas fa-info-circle me-1"></i> About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <h2 class="mb-4">Dashboard</h2>
+        
+        <!-- Stats Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="value" id="total-processed">0</div>
+                    <div class="label">Processed Descriptions</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="value" id="success-rate">0%</div>
+                    <div class="label">Success Rate</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="icon">
+                        <i class="fas fa-compress-alt"></i>
+                    </div>
+                    <div class="value" id="avg-reduction">0%</div>
+                    <div class="label">Avg. Reduction</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <div class="icon">
+                        <i class="fas fa-file-csv"></i>
+                    </div>
+                    <div class="value" id="files-processed">0</div>
+                    <div class="label">Files Processed</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Abbreviation Methods Used
+                    </div>
+                    <div class="card-body">
+                        <canvas id="methods-chart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Abbreviation Patterns
+                    </div>
+                    <div class="card-body">
+                        <canvas id="patterns-chart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Examples and Metrics -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Common Abbreviation Examples
+                    </div>
+                    <div class="card-body">
+                        <div class="abbr-example">
+                            <span class="original">Temperature</span>
+                            <span class="arrow">→</span>
+                            <span class="abbreviated">Temp</span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">54.5% reduction</small>
+                                <small class="text-success">Standard</small>
+                            </div>
+                        </div>
+                        <div class="abbr-example">
+                            <span class="original">Controller</span>
+                            <span class="arrow">→</span>
+                            <span class="abbreviated">Ctrl</span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">70.0% reduction</small>
+                                <small class="text-success">Standard</small>
+                            </div>
+                        </div>
+                        <div class="abbr-example">
+                            <span class="original">Stainless Steel</span>
+                            <span class="arrow">→</span>
+                            <span class="abbreviated">SS</span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">85.7% reduction</small>
+                                <small class="text-success">Standard</small>
+                            </div>
+                        </div>
+                        <div class="abbr-example">
+                            <span class="original">Thermostat</span>
+                            <span class="arrow">→</span>
+                            <span class="abbreviated">Tstat</span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">50.0% reduction</small>
+                                <small class="text-success">Standard</small>
+                            </div>
+                        </div>
+                        <div class="abbr-example">
+                            <span class="original">Recirculation</span>
+                            <span class="arrow">→</span>
+                            <span class="abbreviated">RECIRC</span>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">53.8% reduction</small>
+                                <small class="text-success">Standard</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Abbreviation Patterns Effectiveness
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Truncation</span>
+                                <span>51.2%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 51.2%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Vowel Removal</span>
+                                <span>38.7%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-info" style="width: 38.7%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>First+Last Letter</span>
+                                <span>62.3%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-primary" style="width: 62.3%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Standard Abbreviations</span>
+                                <span>43.5%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: 43.5%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Custom ML</span>
+                                <span>47.8%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" style="width: 47.8%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch stats
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateStats(data.stats);
+                        initCharts(data.stats);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching stats:', error);
+                });
+            
+            // Update stats
+            function updateStats(stats) {
+                document.getElementById('total-processed').textContent = stats.total_processed || 0;
+                document.getElementById('success-rate').textContent = stats.success_rate || '0%';
+                document.getElementById('avg-reduction').textContent = stats.avg_reduction || '0%';
+                document.getElementById('files-processed').textContent = stats.files_processed || 0;
+            }
+            
+            // Initialize charts
+            function initCharts(stats) {
+                // Methods chart
+                const methodsCtx = document.getElementById('methods-chart').getContext('2d');
+                const methodsChart = new Chart(methodsCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(stats.methods || {}).map(method => {
+                            return method === 'ml_hybrid' ? 'ML Hybrid' : 
+                                   method === 'ml_basic' ? 'ML Basic' : 'Rule-based';
+                        }),
+                        datasets: [{
+                            data: Object.values(stats.methods || {}),
+                            backgroundColor: ['#2196F3', '#4CAF50', '#FFC107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+                
+                // Patterns chart
+                const patternsCtx = document.getElementById('patterns-chart').getContext('2d');
+                const patternsChart = new Chart(patternsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(stats.patterns || {}),
+                        datasets: [{
+                            label: 'Usage Count',
+                            data: Object.values(stats.patterns || {}),
+                            backgroundColor: '#2196F3'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
