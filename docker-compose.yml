@@ -1,0 +1,39 @@
+services:
+  api:
+    build: .
+    container_name: bjorn_api
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=0
+      - DATABASE_URL=mysql://user:password@db:3306/bjorn_db
+    depends_on:
+      - db
+    networks:
+      - bjorn_network
+
+  db:
+    image: mysql:8.0
+    container_name: bjorn_db
+    restart: always
+    volumes:
+      - bjorn_db_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=bjorn_db
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    ports:
+      - "3306:3306"
+    networks:
+      - bjorn_network
+
+volumes:
+  bjorn_db_data:
+
+networks:
+  bjorn_network:
+    driver: bridge
