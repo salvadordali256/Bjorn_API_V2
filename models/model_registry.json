@@ -1,0 +1,31 @@
+{
+  "active_models": {
+    "basic": "basic_20250507_201303",
+    "hybrid": "hybrid_20250507_201303"
+  },
+  "model_metrics": {
+    "basic": {
+      "basic_20250507_201303": {
+        "path": "/app/models/basic/model.pkl",
+        "timestamp": "20250507_201303",
+        "metrics": {
+          "accuracy": 0.85,
+          "compression_ratio": 0.65
+        },
+        "type": "basic"
+      }
+    },
+    "hybrid": {
+      "hybrid_20250507_201303": {
+        "path": "/app/models/hybrid/model.pkl",
+        "timestamp": "20250507_201303",
+        "metrics": {
+          "accuracy": 0.92,
+          "compression_ratio": 0.72
+        },
+        "type": "hybrid"
+      }
+    }
+  },
+  "last_updated": "2025-05-07T20:13:03.872020"
+}

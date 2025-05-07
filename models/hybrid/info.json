@@ -1,0 +1,11 @@
+{
+  "version": "1.0.1",
+  "active": true,
+  "created": "2025-05-07T20:13:03Z",
+  "type": "hybrid",
+  "description": "Advanced hybrid HVAC abbreviation model",
+  "patterns": {
+    "words": 20,
+    "phrases": 8
+  }
+}

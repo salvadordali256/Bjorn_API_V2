@@ -4,17 +4,27 @@ services:
     container_name: bjorn_api
     restart: always
     ports:
-      - "8000:8000"
+     - "8000:5000"
     volumes:
       - .:/app
     environment:
+      - PYTHONPATH=/app
       - DEBUG=0
       - DATABASE_URL=mysql://user:password@db:3306/bjorn_db
     depends_on:
       - db
     networks:
       - bjorn_network
-
+    command: >
+      bash -c "
+        ln -sf /app/app/utils /app/utils &&
+        ln -sf /app/app/api /app/api &&
+        ln -sf /app/app/web /app/web &&
+        ln -sf /app/app/ml /app/ml &&
+        ln -sf /app/app/core /app/core &&
+        python create_model_files.py &&
+        python app.py
+      "
   db:
     image: mysql:8.0
     container_name: bjorn_db

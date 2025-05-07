@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "active": true,
+  "created": "2025-05-07T20:13:03Z",
+  "type": "basic",
+  "description": "Basic HVAC abbreviation model",
+  "patterns": 15
+}

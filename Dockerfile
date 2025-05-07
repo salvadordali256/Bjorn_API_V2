@@ -27,6 +27,7 @@ COPY . /app/
 RUN touch /app/__init__.py
 RUN find /app -type d -exec touch {}/__init__.py \;
 
+
 # Expose port
 EXPOSE 8000
 

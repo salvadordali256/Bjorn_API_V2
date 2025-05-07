@@ -271,39 +271,39 @@
                 loading.style.display = 'block';
                 result.style.display = 'none';
                 
-                // Process file
-                fetch('/abbreviate', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    loading.style.display = 'none';
+               // Process file
+            fetch('/api/abbreviate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.success) {
+                    // Update stats
+                    processedCount.textContent = data.stats.processed_count;
+                    successRate.textContent = data.stats.success_rate;
+                    avgReduction.textContent = data.stats.avg_reduction;
+                    processingTime.textContent = data.stats.processing_time;
                     
-                    if (data.success) {
-                        // Update stats
-                        processedCount.textContent = data.stats.processed_count;
-                        successRate.textContent = data.stats.success_rate;
-                        avgReduction.textContent = data.stats.avg_reduction;
-                        processingTime.textContent = data.stats.processing_time;
-                        
-                        // Create and store the CSV data
-                        const blob = new Blob([data.csv_data], {type: 'text/csv'});
-                        const url = URL.createObjectURL(blob);
-                        
-                        downloadBtn.href = url;
-                        downloadBtn.download = 'abbreviated_' + data.filename;
-                        
-                        // Show result
-                        result.style.display = 'block';
-                    } else {
-                        alert('Error: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    loading.style.display = 'none';
-                    alert('Error: ' + error.message);
-                });
+                    // Create and store the CSV data
+                    const blob = new Blob([data.csv_data], {type: 'text/csv'});
+                    const url = URL.createObjectURL(blob);
+                    
+                    downloadBtn.href = url;
+                    downloadBtn.download = 'abbreviated_' + data.filename;
+                    
+                    // Show result
+                    result.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                alert('Error: ' + error.message);
+            });
             });
             
             // Handle file selection
