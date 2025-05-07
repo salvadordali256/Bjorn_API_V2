@@ -28,7 +28,7 @@ The Bjorn HVAC Abbreviation Tool is an intelligent system that automatically abb
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/Bjorn_API_v2_Final.git
+git clone https://github.com/salvadordali256/Bjorn_API_v2_Final.git
 cd Bjorn_API_v2_Final
 ```
 
